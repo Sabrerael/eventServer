@@ -4,8 +4,11 @@ var app = express();
 var fs = require("fs");
 
 app.get('/', function (req, res, next) {
-    console.log( events.toString() );
-    res.end( events.toString() );
+    var string = JSON.stringify(events[0]);
+    var objectValue = JSON.parse(string);
+
+    console.log( string.toString() );
+    res.end( string.toString() );
 });
 
 app.get('/search/:input', function (req, res, next) {
@@ -31,3 +34,5 @@ var server = app.listen(8081, function () {
     var port =  server.address().port
     console.log("App listening at http://%s:%s", host, port)
 });
+
+module.exports = server;
