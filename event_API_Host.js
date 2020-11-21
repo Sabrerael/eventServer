@@ -59,10 +59,93 @@ app.get('/location/:location', function (req, res, next) {
     res.end( string.toString() );
 });
 
+//Returns events that occurred on that date
 app.get('/date/:date', function (req, res, next) {
-    var date = req.params.date;
-    console.log( date );
-    res.end( date );
+    var input = req.params.date;
+    var string = '';
+    const regex = /^\d{4}\-(0[1-9]|1[012])\-(0[1-9]|[12][0-9]|3[01])$/g;
+    const inputDate = input.match(regex);
+    if (inputDate == null) {
+        console.log( "Incorrect Format" );
+        res.end( "Incorrect Format. Parameter must follow this format: yyyy-mm-dd" );
+    }
+
+    for (var i = 0; i < events.length; i++) {
+        var event = JSON.stringify(events[i]);
+        var date = events[i].Time.toString().substring(0, 10);
+        console.log(date);
+        if (date == inputDate[0]) {
+            string += event;
+            string += '\n';
+        }
+    }
+
+    if ( string == '' ) {
+        string = 'No results found';
+    }
+
+    console.log( string.toString() );
+    res.end( string.toString() );
+});
+
+//Returns events that happened before the provided time and date
+app.get('/date/before/:date', function (req, res, next) {
+    var input = req.params.date;
+    var string = '';
+    const regex = /^\d{4}\-(0[1-9]|1[012])\-(0[1-9]|[12][0-9]|3[01])T(0[012]|1[1-9])\:(0[012345]|1[1-9])\:(0[012345]|1[1-9])\.\d{3}Z$/g;
+    const inputDate = input.match(regex);
+
+    if (inputDate == null) {
+        console.log( "Incorrect Format" );
+        res.end( "Incorrect Format. Parameter must follow this format: yyyy-mm-ddThh:mm:ss.mmmZ" );
+    } else {
+        for (var i = 0; i < events.length; i++) {
+            var event = JSON.stringify(events[i]);
+            var date = events[i].Time.toString();
+  
+            if (date <= inputDate[0]) {
+                string += event;
+                string += '\n';
+            }
+        }
+
+        if ( string == '' ) {
+            string = 'No results found';
+        }
+
+        console.log( string.toString() );
+        res.end( string.toString() );
+    }
+});
+
+//Returns events that happened before the provided time and date
+app.get('/date/after/:date', function (req, res, next) {
+    var input = req.params.date;
+    var string = '';
+    const regex = /^\d{4}\-(0[1-9]|1[012])\-(0[1-9]|[12][0-9]|3[01])T(0[012]|1[1-9])\:(0[012345]|1[1-9])\:(0[012345]|1[1-9])\.\d{3}Z$/g;
+    const inputDate = input.match(regex);
+
+    if (inputDate == null) {
+        console.log( "Incorrect Format" );
+        res.end( "Incorrect Format. Parameter must follow this format: yyyy-mm-ddThh:mm:ss.mmmZ" );
+    } else {
+        for (var i = 0; i < events.length; i++) {
+            var event = JSON.stringify(events[i]);
+            var date = events[i].Time.toString();
+
+            if (date >= inputDate[0]) {
+                string += event;
+                string += '\n';
+            }
+        }
+
+        if ( string == '' ) {
+            string = 'No results found';
+        }
+
+        console.log( string.toString() );
+        res.end( string.toString() );
+    }
 });
 
 var server = app.listen(8081, function () {
