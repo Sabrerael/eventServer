@@ -4,8 +4,12 @@ var app = express();
 var fs = require("fs");
 
 app.get('/', function (req, res, next) {
-    var string = JSON.stringify(events[0]);
-    var objectValue = JSON.parse(string);
+    var string = '';
+
+    for (var i = 0; i < events.length; i++) {
+        string += JSON.stringify(events[i]);
+        string += '\n';
+    }
 
     console.log( string.toString() );
     res.end( string.toString() );
@@ -13,14 +17,46 @@ app.get('/', function (req, res, next) {
 
 app.get('/search/:input', function (req, res, next) {
     var input = req.params.input;
-    console.log( input );
-    res.end( input );
+    var string = '';
+
+    for (var i = 0; i < events.length; i++) {
+        var event = JSON.stringify(events[i]);
+        var title = events[i].Title.toString().toLowerCase();
+        if (title.includes(input.toLowerCase())) {
+            string += event;
+            string += '\n';
+        }
+    }
+
+    if ( string == '' ) {
+        string = 'No results found';
+    }
+
+    console.log( string.toString() );
+    res.end( string.toString() );
 });
 
 app.get('/location/:location', function (req, res, next) {
-    var location = req.params.location;
-    console.log( location );
-    res.end( location );
+    var input = req.params.location;
+    var string = '';
+
+    for (var i = 0; i < events.length; i++) {
+        var event = JSON.stringify(events[i]);
+        var city = events[i].Location.City.toString().toLowerCase();
+        var state = events[i].Location.State.toString().toLowerCase();
+        var country = events[i].Location.Country.toString().toLowerCase();
+        if (city.includes(input.toLowerCase() || state.includes(input.toLowerCase()) || country.includes(input.toLowerCase()))) {
+            string += event;
+            string += '\n';
+        }
+    }
+
+    if ( string == '' ) {
+        string = 'No results found';
+    }
+
+    console.log( string.toString() );
+    res.end( string.toString() );
 });
 
 app.get('/date/:date', function (req, res, next) {
